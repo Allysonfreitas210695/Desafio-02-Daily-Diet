@@ -6,3 +6,13 @@ export const FONT_SIZE = {
     XXL: 24,
     XXXL: 32
 };
+
+
+export const LINE_HEIGHT = {
+    SM: 15.6,
+    MD: 18.2,
+    LG: 20.8,
+    XL: 23.4,
+    XXL: 31.2,
+    XXXL: 41.6
+}

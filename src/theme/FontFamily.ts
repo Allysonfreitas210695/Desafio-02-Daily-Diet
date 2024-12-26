@@ -1,4 +1,4 @@
 export const FONT_FAMILY = {
-    REGULAR: 'Inter_400Regular',
-    BOLD: 'Inter_700Bold'
+    REGULAR: 'NunitoSans_400Regular',
+    BOLD: 'NunitoSans_700Bold'
 };
