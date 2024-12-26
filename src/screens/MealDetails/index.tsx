@@ -20,6 +20,7 @@ import {
   TitleName, 
   ViewButtonActions 
 } from './styles'
+import { ModalCustom } from '@components/ModalCustom';
 
 type PropsParams = {
 meal: DailyDietDTO
@@ -32,16 +33,23 @@ export default function MealDetails() {
 
   const { meal } = route.params as PropsParams;
 
-
-  
   const navigation = useNavigation();
 
   return (
+    <>
+    {
+      isVisibleModal &&
+      <ModalCustom
+        title="Deseja realmente excluir o registro da refeição?"
+        visible={isVisibleModal}
+        setModalVisible={setIsVisibleModal}
+      />
+    }
     <Container>
-        
         <HeaderMeal
             title='Refeição'
             handleGoBack={() => navigation.navigate('home')}
+            variant={meal.isInDiet ? "GREEN_LIGHT" : "RED_LIGHT"}
         />
 
           <Context>
@@ -79,6 +87,7 @@ export default function MealDetails() {
                 />
               </ViewButtonActions>
           </Context>
-    </Container>
+    </Container> 
+    </>
   )
 }

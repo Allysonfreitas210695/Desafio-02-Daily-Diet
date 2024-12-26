@@ -1,15 +1,15 @@
 import { TouchableOpacityProps, ViewProps } from 'react-native'
 import React from 'react'
-import { Container, IconLeftAction, IconLeftActionWrapper, TitleHeader } from './styles'
+import { Container, IconLeftAction, IconLeftActionWrapper, TitleHeader, VariantHeaderMealProps } from './styles'
 
-type Props = TouchableOpacityProps & {
+type Props = TouchableOpacityProps & VariantHeaderMealProps & {
     title: string;
     handleGoBack: () => void;
 }
 
-export function HeaderMeal({ title, handleGoBack, ...rest }: Props) {
+export function HeaderMeal({ title, handleGoBack, variant = 'GRAY_500', ...rest }: Props) {
   return (
-    <Container >
+    <Container variant={variant}>
       <IconLeftActionWrapper 
         {...rest}
         onPress={handleGoBack}

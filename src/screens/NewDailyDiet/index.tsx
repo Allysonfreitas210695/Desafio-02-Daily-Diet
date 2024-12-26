@@ -40,7 +40,11 @@ export default function NewDailyDiet() {
 
   return (
     <Container>
-      <HeaderMeal title="Nova refeição" handleGoBack={handleGoBack} />
+      <HeaderMeal 
+        title="Nova refeição" 
+        handleGoBack={handleGoBack} 
+        variant='GRAY_500'  
+      />
 
       <Context>
         <ScrollView 

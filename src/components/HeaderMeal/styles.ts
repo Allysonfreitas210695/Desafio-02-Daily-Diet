@@ -1,10 +1,16 @@
 import { ArrowLeft } from "phosphor-react-native";
 import styled, { css } from "styled-components/native";
 
-export const Container = styled.View`
+export type VariantHeaderMealProps = {
+  variant: 'RED_LIGHT' | 'GREEN_LIGHT' | 'GRAY_500'
+}
+
+export const Container = styled.View<VariantHeaderMealProps>`
     width: 100%;
     height: 132px;
-    background-color: ${({theme}) => theme.COLORS.GRAY_500};
+    background-color: ${({theme, variant}) => {
+      return theme.COLORS[variant];
+    }};
 
     justify-content: center;
     align-items: center;

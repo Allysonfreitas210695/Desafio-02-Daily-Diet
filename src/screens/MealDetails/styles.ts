@@ -88,7 +88,7 @@ export const TagStatusDailyDiet = styled.View`
   justify-content: space-around;
   align-items: center;
 
-  border-radius: 8px;
+  border-radius: 20px;
 
   background-color: ${({theme}) => theme.COLORS.GRAY_600};
 `
