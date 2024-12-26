@@ -1,6 +1,6 @@
 import React from 'react'
 import {  Text } from 'react-native'
-import { useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { useTheme } from 'styled-components/native';
 
 import { Button } from '@components/Button';
@@ -20,6 +20,13 @@ export default function Feedback() {
   const route = useRoute();
 
   const { isInDiet } = route.params as PropsParams;
+
+  const navigation = useNavigation();
+
+  function handleRedirectToHome() {
+    navigation.navigate('home');
+  }
+
 
   return (
     <Container>
@@ -43,7 +50,7 @@ export default function Feedback() {
 
       <Button
         title="Ir para a página inicial"
-        onPress={() => console.log("jkdjjdkjk")}
+        onPress={handleRedirectToHome}
         isActive={true}
         style={{
           width: 191
