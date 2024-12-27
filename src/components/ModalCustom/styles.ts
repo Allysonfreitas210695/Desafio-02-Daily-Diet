@@ -17,6 +17,12 @@ export const Content = styled.View`
     
     justify-content: end;
 `
+export const ViewBackground = styled.View`
+    flex: 1;
+    background-color: 'rgba(0, 0, 0, 0.25)';
+    justify-content: 'center';
+    align-items: 'center';
+`;
 
 export const TitleModal = styled.Text`
     margin-top: 40px;
