@@ -14,7 +14,7 @@ export const Label = styled.Text`
 
 export const StyledTextInput = styled(TextInput)<{ isMultiline: boolean; isFocused: boolean }>`
   width: 100%;
-  padding: 0px 14px;
+  padding: ${({ isMultiline }) => (isMultiline ? '8px 14px' : '0px 14px')};
   border-radius: 6px;
   border-width: 1px;
   border-color: ${({ theme, isFocused }) =>

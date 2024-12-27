@@ -54,11 +54,11 @@ export default function NewDailyDiet() {
           showsVerticalScrollIndicator={false}
         >
           <InputField
-            label="Texto"
+            label="Nome"
             value={text}
             onChange={setText}
             type="text"
-            placeholder="Digite algo..."
+            placeholder="Digite o nome da refeição"
           />
 
           <InputField
@@ -66,7 +66,7 @@ export default function NewDailyDiet() {
             value={textarea}
             onChange={setTextarea}
             type="textarea"
-            placeholder="Digite algo..."
+            placeholder="Digite a descrição da refeição"
           />
 
           <ViewContentDataAndHour>

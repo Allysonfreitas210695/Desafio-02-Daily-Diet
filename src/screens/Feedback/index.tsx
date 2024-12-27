@@ -1,5 +1,5 @@
 import React from 'react'
-import {  Text } from 'react-native'
+import {  ScrollView, Text } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { useTheme } from 'styled-components/native';
 
@@ -30,33 +30,38 @@ export default function Feedback() {
 
   return (
     <Container>
-      <TextFeedback isInDiet={isInDiet}>
-        {isInDiet ? "Continue assim!" : "Que pena!"}</TextFeedback>
-      <SubTitleFeedback>
-        {isInDiet ? (
-          <>
-            Você continua <Text style={{ color: COLORS.GRAY_100, fontFamily: FONT_FAMILY.BOLD }}>dentro da dieta</Text>. Muito bem!
-          </>
-        ) : (
-          <>
-            Você <Text style={{ color: COLORS.GRAY_100,  fontFamily: FONT_FAMILY.BOLD }}>saiu da dieta</Text> dessa vez, mas continue se esforçando e não desista!
-          </>
-        )}
-      </SubTitleFeedback>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} 
+        showsVerticalScrollIndicator={false}
+      >
+        <TextFeedback isInDiet={isInDiet}>
+          {isInDiet ? "Continue assim!" : "Que pena!"}</TextFeedback>
+        <SubTitleFeedback>
+          {isInDiet ? (
+            <>
+              Você continua <Text style={{ color: COLORS.GRAY_100, fontFamily: FONT_FAMILY.BOLD }}>dentro da dieta</Text>. Muito bem!
+            </>
+          ) : (
+            <>
+              Você <Text style={{ color: COLORS.GRAY_100,  fontFamily: FONT_FAMILY.BOLD }}>saiu da dieta</Text> dessa vez, mas continue se esforçando e não desista!
+            </>
+          )}
+        </SubTitleFeedback>
 
-      <ViewImageDailyDiet>
-        {isInDiet ? <DailyDietSVG /> : <OffTheDietSVG />}
-      </ViewImageDailyDiet>
+        <ViewImageDailyDiet>
+          {isInDiet ? <DailyDietSVG /> : <OffTheDietSVG />}
+        </ViewImageDailyDiet>
 
-      <Button
-        title="Ir para a página inicial"
-        onPress={handleRedirectToHome}
-        isActive={true}
-        style={{
-          width: 191
-        }}
-        variant='dark'
-      />
+        <Button
+          title="Ir para a página inicial"
+          onPress={handleRedirectToHome}
+          isActive={true}
+          style={{
+            width: 191
+          }}
+          variant='dark'
+        />
+       </ScrollView>
     </Container>
   )
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ViewProps, Keyboard } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { InputFieldWrapper, Label, StyledTextInput } from './styles';
+import { useTheme } from 'styled-components/native';
 
 type InputType = 'text' | 'textarea' | 'date' | 'time';
 
@@ -21,6 +22,8 @@ export function InputField({
   type,
   ...rest
 }: InputFieldProps) {
+  const { COLORS } = useTheme();
+
   const [isFocused, setIsFocused] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -35,9 +38,15 @@ export function InputField({
   const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
     setShowTimePicker(false);
     if (selectedTime) {
-      onChange(selectedTime.toLocaleTimeString());
+      const formattedTime = selectedTime.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      onChange(formattedTime);
     }
   };
+  
 
   return (
     <InputFieldWrapper {...rest}>
@@ -46,6 +55,7 @@ export function InputField({
         <StyledTextInput
           isMultiline={false}
           isFocused={isFocused}
+          placeholderTextColor={COLORS.GRAY_500}
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
@@ -60,7 +70,9 @@ export function InputField({
           isMultiline={true}
           isFocused={isFocused}
           value={value}
+          placeholderTextColor={COLORS.GRAY_500}
           onChangeText={onChange}
+          textAlignVertical="top"
           placeholder={placeholder}
           multiline
           onFocus={() => setIsFocused(true)}
@@ -73,6 +85,7 @@ export function InputField({
           <StyledTextInput
             isMultiline={false}
             isFocused={isFocused}
+            placeholderTextColor={COLORS.GRAY_500}
             value={value}
             onTouchStart={() => setShowDatePicker(true)}
             placeholder={placeholder}
@@ -93,6 +106,7 @@ export function InputField({
             isMultiline={false}
             isFocused={isFocused}
             value={value}
+            placeholderTextColor={COLORS.GRAY_500}
             onTouchStart={() => setShowTimePicker(true)}
             placeholder={placeholder}
           />
@@ -101,7 +115,7 @@ export function InputField({
               value={new Date()}
               mode="time"
               display="default"
-              onChange={handleTimeChange}
+              onChange={(event, selectedTime) => handleTimeChange(event, selectedTime)}
             />
           )}
         </>
