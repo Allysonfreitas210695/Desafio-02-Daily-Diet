@@ -1,26 +1,56 @@
-import React from 'react';
-import { Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { Alert, Dimensions } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { Percent } from '@components/Percent';
 import CardStatistic from '@components/CardStatistic';
 
 import { CardInfoTotalSnack, Container, Context, Title } from './styles';
 
+import { SnackDTO } from '@dtos/SnackDTO';
+
+import { snackGetAll } from '@storage/snack/snackGetAll';
+import { getBestDietSequence } from '@utils/DietSequence';
+
 const WIDTH = (Dimensions.get('window').width / 2) - 30;
 
 export default function Statistic() {
+  const [loading, setLoading] = useState(false);
+  const [meals, setMeals] = useState<SnackDTO[]>([]);
+  const [bestSequence, setBestSequence] = useState(0);
+
   const navigation = useNavigation();
 
+
   function handleGoBack() {
-    navigation.goBack();
+    navigation.navigate('home');
   }
+
+    async function fetchSnacks (){
+        try {
+         setLoading(true);
+         const snacks = await snackGetAll();
+         const bestSequence = getBestDietSequence(snacks);
+         
+         setMeals(snacks);
+         setBestSequence(bestSequence);
+        } catch (error) {
+         return Alert.alert('Erro', 'Ocorreu um erro ao pegar dados das refeições. Tente novamente.', [
+                 { text: 'OK' },
+               ]);
+        }finally{
+         setLoading(false);
+        }
+    };
+
+    useFocusEffect(useCallback(() => {
+      fetchSnacks();
+    }, []))
+      
   return (
     <Container>
       <Percent
-        title='90,86%'
         subTitle='das refeições dentro da dieta'
-        dailyDiet={false}
         showIconLeft={true}
         onPressLeftIcon={handleGoBack}
         style={{
@@ -32,7 +62,7 @@ export default function Statistic() {
         <Title>Estatísticas gerais</Title>
 
         <CardStatistic
-          total={4}
+          total={bestSequence}
           title="melhor sequência de pratos dentro da dieta"
           style={{
             height: 90
@@ -40,7 +70,7 @@ export default function Statistic() {
         />
 
         <CardStatistic
-            total={109}
+            total={meals.filter(meals => meals.isInDiet).length}
             title="refeições registradas"
             style={{
               height: 90
@@ -49,7 +79,7 @@ export default function Statistic() {
 
           <CardInfoTotalSnack>
             <CardStatistic
-              total={32}
+              total={meals.filter(meals => meals.isInDiet).length}
               title="refeições dentro da dieta"
               style={{
                 width: WIDTH,
@@ -57,7 +87,7 @@ export default function Statistic() {
               }}
             />
             <CardStatistic
-              total={77}
+              total={meals.filter(meals => !meals.isInDiet).length}
               title="refeições fora da dieta"
               style={{
                 width: WIDTH,

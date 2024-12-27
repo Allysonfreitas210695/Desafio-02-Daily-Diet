@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ViewProps } from "react-native";
 
-import { Container, Title, SubTitle, IconRightAction, IconLeftAction, IconRightActionWrapper, IconLeftActionWrapper } from "./styles";
+import { calculateDietPercentage } from "@storage/snack/calculateDietPercentage";
+
+import { Loading } from "@components/Loading";
+
+import { 
+  Container, 
+  Title,
+  SubTitle, 
+  IconRightAction, 
+  IconLeftAction, 
+  IconRightActionWrapper, 
+  IconLeftActionWrapper 
+} from "./styles";
 
 type Props = ViewProps & {
-  title: string;
   subTitle: string;
   dailyDiet?: boolean | null;
   showIconRight?: boolean;
@@ -14,35 +25,59 @@ type Props = ViewProps & {
 };
 
 export function Percent({
-    title,
     subTitle,
-    dailyDiet,
     showIconRight = false,
     showIconLeft = false,
     onPressRightIcon,
     onPressLeftIcon,
     ...rest
-  }: Props) {
+  }: Props) 
+  {
+    const [loading, setLoading] = useState(false);
+    const [percentage, setPercentage] = useState(0);
+
+   async function fetchPercentage (){
+     try {
+      setLoading(true);
+
+      const calculatedPercentage = await calculateDietPercentage();
+      setPercentage(calculatedPercentage);
+     } catch (error) {
+      
+     }finally{
+      setLoading(false);
+     }
+    };
+
+    useEffect(() => {
+      fetchPercentage();
+    }, []);
+
+    const dailyDietPercent = percentage >= 50 ? true : (percentage > 0 && percentage < 50) ? false : null;
+
+    if(loading) return <Loading/>;
+
     return (
-      <Container {...rest} dailyDiet={dailyDiet}>
-        {showIconRight && dailyDiet != null && (
+     
+      <Container {...rest} dailyDiet={dailyDietPercent}>
+        {showIconRight && (
             <IconRightActionWrapper 
             onPress={onPressRightIcon} 
             activeOpacity={0.6}
             >
-                <IconRightAction dailyDiet={dailyDiet} />
+                <IconRightAction dailyDiet={dailyDietPercent} />
             </IconRightActionWrapper>
         )}
-        {showIconLeft && dailyDiet != null && (
+        {showIconLeft  && (
             <IconLeftActionWrapper 
             onPress={onPressLeftIcon} 
             activeOpacity={0.6}
             >
-            <IconLeftAction dailyDiet={dailyDiet} />
+            <IconLeftAction dailyDiet={dailyDietPercent} />
             </IconLeftActionWrapper>
         )}
         
-        <Title>{title}</Title>
+        <Title>{percentage.toFixed(2)} %</Title>
         <SubTitle>{subTitle}</SubTitle>
       </Container>
     );

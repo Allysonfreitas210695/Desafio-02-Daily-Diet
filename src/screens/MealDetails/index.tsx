@@ -3,7 +3,7 @@ import { PencilSimpleLine, TrashSimple } from 'phosphor-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 
-import { DailyDietDTO } from '@dtos/DailyDietDTO';
+import { SnackDTO } from '@dtos/SnackDTO';
 
 import { HeaderMeal } from '@components/HeaderMeal';
 import { Button } from '@components/Button';
@@ -21,12 +21,15 @@ import {
   ViewButtonActions 
 } from './styles'
 import { ModalCustom } from '@components/ModalCustom';
+import { Alert } from 'react-native';
+import { snackRemove } from '@storage/snack/snackRemove';
 
 type PropsParams = {
-meal: DailyDietDTO
+  meal: SnackDTO
 };
 
 export default function MealDetails() {
+  const [isLoading, setIsLoading] = useState(false);
   const [isVisibleModal, setIsVisibleModal] = useState(false);
 
   const route = useRoute();
@@ -34,6 +37,29 @@ export default function MealDetails() {
   const { meal } = route.params as PropsParams;
 
   const navigation = useNavigation();
+
+  if(!meal) navigation.goBack();
+
+  async function handleRemoveMeal() {
+    try {
+      setIsVisibleModal(false);
+      setIsLoading(true);
+      
+      await snackRemove(meal.id);
+
+      navigation.navigate('home')
+    } catch (error) {
+        return Alert.alert('Erro', 'Ocorreu um erro ao remover a refeição. Tente novamente.', [
+                { text: 'OK' },
+              ]);
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
+  function handleEditMeal() {
+    navigation.navigate('newDailyDiet', { meal });
+  }
 
   return (
     <>
@@ -43,6 +69,7 @@ export default function MealDetails() {
         title="Deseja realmente excluir o registro da refeição?"
         visible={isVisibleModal}
         setModalVisible={setIsVisibleModal}
+        onPressConfirmed={() => handleRemoveMeal()}
       />
     }
     <Container>
@@ -70,9 +97,9 @@ export default function MealDetails() {
                   style={{
                     marginBottom: 8
                   }}
-                  isActive
+                  isActive={isLoading}
                   variant="dark"
-                  onPress={() => console.log("Editar")}
+                  onPress={handleEditMeal}
                 />
 
                 <Button
@@ -80,7 +107,7 @@ export default function MealDetails() {
                   variant='light'
                   onPress={() => setIsVisibleModal(!isVisibleModal)}
                   IconAction={TrashSimple}
-                  isActive={false}
+                  isActive={isLoading}
                   style={{
                     marginBottom: 8
                   }}

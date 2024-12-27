@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { useTheme } from 'styled-components/native';
+import uuid from 'react-native-uuid';
 
 import { HeaderMeal } from '@components/HeaderMeal';
 import { InputField } from '@components/InputField';
@@ -17,26 +18,92 @@ import {
   ViewButtonAction,
   ViewContentDataAndHour,
 } from './styles';
+import { snackCreate } from '@storage/snack/snackCreate';
+import { SnackDTO } from '@dtos/SnackDTO';
+import { snackUpdate } from '@storage/snack/snackUpdate';
+
+
+type PropsParams = {
+  meal: SnackDTO
+};
 
 export default function NewDailyDiet() {
   const { COLORS, FONT_FAMILY, FONT_SIZE } = useTheme();
 
-  const [text, setText] = useState('');
-  const [textarea, setTextarea] = useState('');
+  const route = useRoute();
+
+  const { meal } = route.params as PropsParams;
+
+  const [loading, setLoading] = useState(false);
+
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [hours, setHours] = useState('');
   const [isInDiet, setIsInDiet] = useState<boolean | null>(null);
 
   const navigation = useNavigation();
 
   function handleGoBack() {
-    navigation.goBack();
+    navigation.navigate('home');
   }
 
-  function handleFeedback() {
-    if(isInDiet != null)
-      navigation.navigate('feedback', { isInDiet });
+  async function handleFeedback() {
+    if (!name || !description || !date || !hours || isInDiet === null) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos antes de cadastrar a refeição.', [
+        { text: 'OK' },
+      ]);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+
+      if(meal){
+        await snackUpdate({
+          id: meal.id,
+          name,
+          description,
+          date,
+          hours,
+          isInDiet,
+          created_at: meal.created_at,
+          updated_at: new Date().toISOString()
+        });
+      }
+      else {
+          await snackCreate({
+            id: uuid.v4(),
+            name,
+            description,
+            date,
+            hours,
+            isInDiet,
+            created_at: new Date().toISOString()
+          });
+      }
+
+      if(isInDiet != null)
+        navigation.navigate('feedback', { isInDiet });
+
+    }catch (err) {
+     return Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a refeição. Tente novamente.', [
+        { text: 'OK' },
+      ]);
+    }finally{
+      setLoading(false);
+    }
   }
+
+  useEffect(() => {
+    if(meal){
+      setName(meal.name);
+      setDescription(meal.description);
+      setDate(meal.date);
+      setHours(meal.hours);
+      setIsInDiet(meal.isInDiet);
+    }
+  }, [meal]);
 
   return (
     <Container>
@@ -55,16 +122,16 @@ export default function NewDailyDiet() {
         >
           <InputField
             label="Nome"
-            value={text}
-            onChange={setText}
+            value={name}
+            onChange={setName}
             type="text"
             placeholder="Digite o nome da refeição"
           />
 
           <InputField
             label="Descrição"
-            value={textarea}
-            onChange={setTextarea}
+            value={description}
+            onChange={setDescription}
             type="textarea"
             placeholder="Digite a descrição da refeição"
           />
@@ -81,8 +148,8 @@ export default function NewDailyDiet() {
 
             <InputField
               label="Hora"
-              value={time}
-              onChange={setTime}
+              value={hours}
+              onChange={setHours}
               type="time"
               placeholder="Selecione a hora"
               style={{ width: '50%' }}
@@ -133,7 +200,7 @@ export default function NewDailyDiet() {
             title="Cadastrar refeição"
             onPress={handleFeedback}
             variant="dark"
-            isActive={true}
+            isActive={loading}
           />
         </ViewButtonAction>
 

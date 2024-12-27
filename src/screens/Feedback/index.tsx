@@ -8,7 +8,12 @@ import { Button } from '@components/Button';
 import DailyDietSVG from "@assets/dailyDiet.svg";
 import OffTheDietSVG from "@assets/offTheDiet.svg";
 
-import { Container, SubTitleFeedback, TextFeedback, ViewImageDailyDiet } from './styles';
+import { 
+  Container, 
+  SubTitleFeedback, 
+  TextFeedback, 
+  ViewImageDailyDiet 
+} from './styles';
 
 type PropsParams = {
   isInDiet: boolean;
@@ -55,7 +60,7 @@ export default function Feedback() {
         <Button
           title="Ir para a página inicial"
           onPress={handleRedirectToHome}
-          isActive={true}
+          isActive={false}
           style={{
             width: 191
           }}

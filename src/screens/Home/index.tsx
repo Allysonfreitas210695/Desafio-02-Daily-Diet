@@ -1,58 +1,31 @@
-import React, { useState } from 'react';
-import { SectionList, Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { Alert, SectionList, Text, View } from 'react-native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import { Header } from '@components/Header';
 import { Percent } from '@components/Percent';
 import { Button } from '@components/Button';
 import { Plus } from 'phosphor-react-native';
 import { Meal } from '@components/Meal';
+import { Loading } from '@components/Loading';
 
-import { DailyDietDTO } from '@dtos/DailyDietDTO';
+import { snackGetAllSection } from '@storage/snack/snackGetAllSection';
+import { snackGetAll } from '@storage/snack/snackGetAll';
 
-import { Container, Title, ViewButtonAddSnack, ViewCardPercent } from './styles';
+import { SnackDTO, SnackSectionListDTO } from '@dtos/SnackDTO';
+
+import { 
+  Container, 
+  Title, 
+  ViewButtonAddSnack, 
+  ViewCardPercent
+} from './styles';
 
 export default function Home() {
-  const [meals, setMeals] = useState([ 
-    {
-      title: '12.08.22',
-      data: [
-        {
-          id: "1",
-          date: new Date().toISOString(),
-          description: "Xis completo da lancheria do bairro",
-          hours: "20:00",
-          isInDiet: true,
-          name: "X-tudo",
-          sequence: 1,
-        },
-        {
-          id: "2",
-          date: new Date().toISOString(),
-          description: "Xis completo da lancheria do bairro",
-          hours: "12:30",
-          isInDiet: true,
-          name: "Salada",
-          sequence: 2,
-        },
-      ],
-    },
-    {
-      title: '13.08.22',
-      data: [
-        {
-          id: "3",
-          date: new Date().toISOString(),
-          description: "Xis completo da lancheria do bairro",
-          hours: "22:00",
-          isInDiet: false,
-          name: "Pizza",
-          sequence: 1,
-        },
-      ],
-    },
+  const [loading, setLoading] = useState(false);
 
-  ])
+  const [mealsSectionList, setMealsSectionList] = useState<SnackSectionListDTO[]>([]);
+  const [meals, setMeals] = useState<SnackDTO[]>([]);
   
   const navigation = useNavigation();
 
@@ -61,12 +34,48 @@ export default function Home() {
   }
 
   function handleNewDailyDiet() {
-    navigation.navigate('newDailyDiet');
+    navigation.navigate('newDailyDiet',{ meal: null });
   }
 
-  const handleNavigate = (meal: DailyDietDTO) => {
+  const handleNavigate = (meal: SnackDTO) => {
     navigation.navigate('mealDetails', { meal });
   };
+
+  async function fetchSnacks(){
+    try {
+      setLoading(true);
+
+      const list = await snackGetAll();
+      setMeals(list);
+    } catch (error) {
+      return Alert.alert('Erro', 'Ocorreu um erro ao buscar todas as refeições. Tente novamente.', [
+              { text: 'OK' },
+            ]);
+    }finally{
+     setLoading(false);
+    }
+  }
+
+  async function fetchSnacksForSection(){
+    try {
+      setLoading(true);
+
+      const list = await snackGetAllSection();
+      setMealsSectionList(list);
+
+    } catch (error) {
+      return Alert.alert('Erro', 'Ocorreu um erro ao buscar dados para listagem das refeições. Tente novamente.', [
+              { text: 'OK' },
+            ]);
+    }finally{
+     setLoading(false);
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchSnacks();
+    fetchSnacksForSection();
+  }, []))
 
   return (
     <Container>
@@ -74,10 +83,8 @@ export default function Home() {
 
       <ViewCardPercent>
         <Percent
-          title='90,86%'
           subTitle='das refeições dentro da dieta'
           style={{ height: 102 }}
-          dailyDiet={false}
           showIconRight={true}
           onPressRightIcon={handleOpenStatic}
         />
@@ -89,15 +96,18 @@ export default function Home() {
         <Button
           title='Nova refeição'
           variant='dark'
-          isActive={true}
+          isActive={loading}
           onPress={handleNewDailyDiet}
           IconAction={Plus}
         />
       </ViewButtonAddSnack>
 
-    <SectionList
-        sections={meals}
-        keyExtractor={(item, index) => index.toString()}
+    {
+      loading ?
+      <Loading/> :
+      <SectionList
+        sections={mealsSectionList}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Meal 
             data={item} 
@@ -109,7 +119,7 @@ export default function Home() {
         )}
         contentContainerStyle={[
           { marginHorizontal: 24 },
-          meals.length === 0 ? {flex: 1, justifyContent: 'center', alignItems: 'center'} : {}
+          mealsSectionList.length === 0 ? {flex: 1, justifyContent: 'center', alignItems: 'center'} : {}
         ]}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
@@ -127,7 +137,7 @@ export default function Home() {
           )
         }
       />
-
+    }
     </Container>
   )
 }

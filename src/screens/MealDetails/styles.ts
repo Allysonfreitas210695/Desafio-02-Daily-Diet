@@ -13,7 +13,8 @@ export const Container = styled.View`
 export const Context = styled.View`
     flex: 1;
     background-color: ${({theme}) => theme.COLORS.GRAY_700};
-    border-radius: 20px;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
     margin-top: -34px;
 
     width: 100%;

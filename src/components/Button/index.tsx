@@ -22,6 +22,7 @@ export function Button({
         isActive={isActive}
         variant={variant}
         activeOpacity={0.6}
+        disabled={isActive}
     >
         {IconAction && <IconAction size={24} color={variant === 'dark' ? '#FFF' : "#000"} />}
         <TextButton variant={variant}>

@@ -6,9 +6,10 @@ type Props = {
     title: string;
     visible: boolean;
     setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    onPressConfirmed: () => void;
 }
 
-export function ModalCustom({ title, visible, setModalVisible }: Props) {
+export function ModalCustom({ title, visible, setModalVisible, onPressConfirmed }: Props) {
     return (
         <Container
             transparent={true}
@@ -31,7 +32,7 @@ export function ModalCustom({ title, visible, setModalVisible }: Props) {
                         />
                         <Button
                             variant="dark"
-                            onPress={() => console.log("cancel")}
+                            onPress={onPressConfirmed}
                             isActive={false}
                             title="Sim, excluir"
                             style={{
